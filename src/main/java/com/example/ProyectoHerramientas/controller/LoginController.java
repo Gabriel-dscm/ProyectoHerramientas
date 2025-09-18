@@ -32,21 +32,11 @@ public class LoginController {
         if (u != null && u.getPassword().equals(password)) {
             // guardar en sesión
             session.setAttribute("usuario", u);
-            return "redirect:/home";
+            return "redirect:/billetera";
         } else {
             model.addAttribute("error", "Usuario o contraseña incorrectos");
             return "login";
         }
-    }
-
-    @GetMapping("/home")
-    public String home(HttpSession session, Model model) {
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
-        if (usuario == null) {
-            return "redirect:/login";
-        }
-        model.addAttribute("usuario", usuario);
-        return "home"; // vista principal
     }
 
     @GetMapping("/logout")

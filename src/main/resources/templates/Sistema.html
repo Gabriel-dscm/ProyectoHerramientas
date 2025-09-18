@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Billetera Digital</title>
+</head>
+<body>
+
+<!-- Menú lateral -->
+<div>
+    <h4>Billetera</h4>
+    <ul>
+        <li><a href="#" onclick="mostrarSeccion('inicio', event)">Inicio</a></li>
+        <li><a href="#" onclick="mostrarSeccion('movimientos', event)">Movimientos</a></li>
+        <li><a href="#" onclick="mostrarSeccion('perfil', event)">Perfil</a></li>
+        <li><a href="#" onclick="mostrarSeccion('transferir', event)">Transferir</a></li>
+        <li><a href="#" onclick="mostrarSeccion('configuracion', event)">Configuración</a></li>
+    </ul>
+</div>
+
+<!-- Contenido -->
+<div>
+
+    <!-- INICIO -->
+    <div id="inicio" class="seccion" style="display:block;">
+        <h2>Inicio</h2>
+        <p>Saldo Billetera: <span id="saldoBilletera">S/ 0.00</span></p>
+        <p>Saldo Tarjeta: <span id="saldoTarjeta">S/ 0.00</span></p>
+        <h3>Últimos Movimientos</h3>
+        <table border="1">
+            <thead>
+            <tr><th>Fecha</th><th>Descripción</th><th>Monto</th></tr>
+            </thead>
+            <tbody id="tablaUltimosMov"></tbody>
+        </table>
+        <h3>Distribución de Gastos</h3>
+        <p>Aquí iría un gráfico.</p>
+    </div>
+
+    <!-- PERFIL -->
+    <div id="perfil" class="seccion" style="display:none;">
+        <h2>Perfil</h2>
+        <p><strong>Nombre:</strong> Juan Pérez</p>
+        <p><strong>Email:</strong> juanperez@email.com</p>
+        <p><strong>Teléfono:</strong> +51 987654321</p>
+        <p><strong>Dirección:</strong> Lima, Perú</p>
+        <form onsubmit="vincularTarjeta(event)">
+            <p>💳 Vincular Tarjeta</p>
+            <input type="text" id="numeroTarjeta" placeholder="Número de tarjeta" required>
+            <input type="number" id="saldoInicialTarjeta" placeholder="Saldo inicial" required>
+            <button>Vincular</button>
+        </form>
+        <p id="tarjetaVinculada"></p>
+    </div>
+
+    <!-- MOVIMIENTOS -->
+    <div id="movimientos" class="seccion" style="display:none;">
+        <h2>Movimientos</h2>
+        <form onsubmit="agregarMovimiento(event)">
+            <input type="text" id="descMovimiento" placeholder="Descripción" required>
+            <input type="number" id="montoMovimiento" placeholder="Monto" required>
+            <button>Agregar</button>
+        </form>
+        <ul id="listaMovimientos"></ul>
+    </div>
+
+    <!-- TRANSFERIR -->
+    <div id="transferir" class="seccion" style="display:none;">
+        <h2>Transferir</h2>
+        <form onsubmit="transferirDinero(event)">
+            <select id="origen" required>
+                <option value="billetera">Billetera</option>
+                <option value="tarjeta">Tarjeta</option>
+            </select>
+            <select id="destino" required>
+                <option value="tarjeta">Tarjeta</option>
+                <option value="billetera">Billetera</option>
+            </select>
+            <input type="number" id="montoTransferencia" placeholder="S/ 0.00" required>
+            <button>Confirmar</button>
+        </form>
+    </div>
+
+    <!-- CONFIGURACIÓN -->
+    <div id="configuracion" class="seccion" style="display:none;">
+        <h2>Configuración</h2>
+        <p><button onclick="cambiarTema()">Cambiar Tema</button></p>
+        <p>
+            <label>
+                <input type="checkbox" id="notificaciones">
+                Activar notificaciones
+            </label>
+        </p>
+        <p>
+            <select>
+                <option>Español</option>
+                <option>Inglés</option>
+            </select>
+        </p>
+        <button>Eliminar cuenta</button>
+    </div>
+
+</div>
+
+<script>
+    function mostrarSeccion(id, event) {
+      document.querySelectorAll('.seccion').forEach(div => div.style.display = 'none');
+      document.getElementById(id).style.display = 'block';
+    }
+</script>
+
+</body>
+</html>

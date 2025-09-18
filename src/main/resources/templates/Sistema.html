@@ -4,110 +4,181 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Billetera Digital</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { background-color: #fff; color: #000; }
+        .sidebar {
+          position: fixed; top: 0; left: 0; height: 100vh; width: 240px;
+          background-color: #000; color: #fff; padding-top: 1rem;
+        }
+        .sidebar .nav-link { color: #bbb; }
+        .sidebar .nav-link.active, .sidebar .nav-link:hover {
+          background-color: #111; color: #fff; border-radius: 8px;
+        }
+        .content { margin-left: 250px; padding: 20px; }
+        .saldo-card { background: #000; color: #fff; border-radius: 20px; }
+        .saldo-card h2 { font-size: 2.2rem; font-weight: bold; }
+        .seccion { display: none; }
+        .seccion.active { display: block; }
+    </style>
 </head>
 <body>
-
-<!-- Menú lateral -->
-<div>
-    <h4>Billetera</h4>
-    <ul>
-        <li><a href="#" onclick="mostrarSeccion('inicio', event)">Inicio</a></li>
-        <li><a href="#" onclick="mostrarSeccion('movimientos', event)">Movimientos</a></li>
-        <li><a href="#" onclick="mostrarSeccion('perfil', event)">Perfil</a></li>
-        <li><a href="#" onclick="mostrarSeccion('transferir', event)">Transferir</a></li>
-        <li><a href="#" onclick="mostrarSeccion('configuracion', event)">Configuración</a></li>
+<div class="sidebar d-flex flex-column p-3">
+    <h4 class="mb-4"><i class="bi bi-wallet2 me-2"></i>Billetera</h4>
+    <ul class="nav flex-column gap-2">
+        <li><a href="#" class="nav-link active" onclick="mostrarSeccion('inicio', event)"><i class="bi bi-house-door me-2"></i> Inicio</a></li>
+        <li><a href="#" class="nav-link" onclick="mostrarSeccion('movimientos', event)"><i class="bi bi-graph-up me-2"></i> Movimientos</a></li>
+        <li><a href="#" class="nav-link" onclick="mostrarSeccion('perfil', event)"><i class="bi bi-person-circle me-2"></i> Perfil</a></li>
+        <li><a href="#" class="nav-link" onclick="mostrarSeccion('transferir', event)"><i class="bi bi-send me-2"></i> Transferir</a></li>
+        <li><a href="#" class="nav-link" onclick="mostrarSeccion('configuracion', event)"><i class="bi bi-gear me-2"></i> Configuración</a></li>
     </ul>
 </div>
 
-<!-- Contenido -->
-<div>
+<div class="content">
+    <div class="container-fluid">
 
-    <!-- INICIO -->
-    <div id="inicio" class="seccion" style="display:block;">
-        <h2>Inicio</h2>
-        <p>Saldo Billetera: <span id="saldoBilletera">S/ 0.00</span></p>
-        <p>Saldo Tarjeta: <span id="saldoTarjeta">S/ 0.00</span></p>
-        <h3>Últimos Movimientos</h3>
-        <table border="1">
-            <thead>
-            <tr><th>Fecha</th><th>Descripción</th><th>Monto</th></tr>
-            </thead>
-            <tbody id="tablaUltimosMov"></tbody>
-        </table>
-        <h3>Distribución de Gastos</h3>
-        <p>Aquí iría un gráfico.</p>
+        <!-- INICIO -->
+        <div id="inicio" class="seccion active">
+            <div class="card saldo-card p-4 shadow-lg mb-4">
+                <p class="mb-1">Saldo Billetera</p>
+                <h2 id="saldoBilletera">S/ 0.00</h2>
+                <p class="mb-1 mt-3">Saldo Tarjeta</p>
+                <h2 id="saldoTarjeta">S/ 0.00</h2>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Últimos Movimientos</h5>
+                            <table class="table table-striped">
+                                <thead>
+                                <tr><th>Fecha</th><th>Descripción</th><th>Monto</th></tr>
+                                </thead>
+                                <tbody id="tablaUltimosMov"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Distribución de Gastos</h5>
+                            <canvas id="gastosChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PERFIL -->
+        <div id="perfil" class="seccion">
+            <h2><i class="bi bi-person-circle me-2"></i>Perfil</h2>
+            <div class="card p-4 shadow-sm mb-4">
+                <div class="text-center mb-3">
+                    <img src="https://via.placeholder.com/100" class="rounded-circle mb-2" alt="Foto perfil">
+                    <div><button class="btn btn-outline-dark btn-sm">Cambiar foto</button></div>
+                </div>
+                <p><strong>Nombre:</strong> Juan Pérez</p>
+                <p><strong>Email:</strong> juanperez@email.com</p>
+                <p><strong>Teléfono:</strong> +51 987654321</p>
+                <p><strong>Dirección:</strong> Lima, Perú</p>
+                <button class="btn btn-dark mb-3">Editar perfil</button>
+            </div>
+
+            <div class="card p-4 shadow-sm mb-4">
+                <h5>💳 Vincular Tarjeta</h5>
+                <form onsubmit="vincularTarjeta(event)">
+                    <input type="text" id="numeroTarjeta" class="form-control mb-2" placeholder="Número de tarjeta" required>
+                    <input type="number" id="saldoInicialTarjeta" class="form-control mb-2" placeholder="Saldo inicial" required>
+                    <button class="btn btn-success">Vincular</button>
+                </form>
+                <p id="tarjetaVinculada" class="mt-2"></p>
+            </div>
+        </div>
+
+        <!-- MOVIMIENTOS -->
+        <div id="movimientos" class="seccion">
+            <h2><i class="bi bi-graph-up me-2"></i> Movimientos</h2>
+            <form class="row g-3 mb-3" onsubmit="agregarMovimiento(event)">
+                <div class="col-md-5">
+                    <input type="text" id="descMovimiento" class="form-control" placeholder="Descripción" required>
+                </div>
+                <div class="col-md-4">
+                    <input type="number" id="montoMovimiento" class="form-control" placeholder="Monto" required>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-dark w-100">Agregar</button>
+                </div>
+            </form>
+            <ul id="listaMovimientos" class="list-group mb-4"></ul>
+        </div>
+
+
+        <!-- TRANSFERIR -->
+        <div id="transferir" class="seccion">
+            <h2><i class="bi bi-send me-2"></i>Transferir</h2>
+            <form onsubmit="transferirDinero(event)">
+                <div class="row mb-3">
+                    <div class="col-md-5">
+                        <select id="origen" class="form-control" required>
+                            <option value="billetera">Billetera</option>
+                            <option value="tarjeta">Tarjeta</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <select id="destino" class="form-control" required>
+                            <option value="tarjeta">Tarjeta</option>
+                            <option value="billetera">Billetera</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" id="montoTransferencia" class="form-control" placeholder="S/ 0.00" required>
+                    </div>
+                </div>
+                <button class="btn btn-warning">Confirmar</button>
+            </form>
+        </div>
+
+        <!-- CONFIGURACIÓN -->
+        <div id="configuracion" class="seccion">
+            <h2><i class="bi bi-gear me-2"></i>Configuración</h2>
+            <div class="card p-4 shadow-sm mb-3">
+                <h5>Tema</h5>
+                <button class="btn btn-outline-dark" onclick="cambiarTema()">Cambiar a oscuro/claro</button>
+            </div>
+            <div class="card p-4 shadow-sm mb-3">
+                <h5>Notificaciones</h5>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="notificaciones">
+                    <label class="form-check-label" for="notificaciones">Activar notificaciones</label>
+                </div>
+            </div>
+            <div class="card p-4 shadow-sm mb-3">
+                <h5>Idioma</h5>
+                <select class="form-select">
+                    <option>Español</option>
+                    <option>Inglés</option>
+                </select>
+            </div>
+            <div class="card p-4 shadow-sm">
+                <button class="btn btn-danger">Eliminar cuenta</button>
+            </div>
+        </div>
+
     </div>
-
-    <!-- PERFIL -->
-    <div id="perfil" class="seccion" style="display:none;">
-        <h2>Perfil</h2>
-        <p><strong>Nombre:</strong> Juan Pérez</p>
-        <p><strong>Email:</strong> juanperez@email.com</p>
-        <p><strong>Teléfono:</strong> +51 987654321</p>
-        <p><strong>Dirección:</strong> Lima, Perú</p>
-        <form onsubmit="vincularTarjeta(event)">
-            <p>💳 Vincular Tarjeta</p>
-            <input type="text" id="numeroTarjeta" placeholder="Número de tarjeta" required>
-            <input type="number" id="saldoInicialTarjeta" placeholder="Saldo inicial" required>
-            <button>Vincular</button>
-        </form>
-        <p id="tarjetaVinculada"></p>
-    </div>
-
-    <!-- MOVIMIENTOS -->
-    <div id="movimientos" class="seccion" style="display:none;">
-        <h2>Movimientos</h2>
-        <form onsubmit="agregarMovimiento(event)">
-            <input type="text" id="descMovimiento" placeholder="Descripción" required>
-            <input type="number" id="montoMovimiento" placeholder="Monto" required>
-            <button>Agregar</button>
-        </form>
-        <ul id="listaMovimientos"></ul>
-    </div>
-
-    <!-- TRANSFERIR -->
-    <div id="transferir" class="seccion" style="display:none;">
-        <h2>Transferir</h2>
-        <form onsubmit="transferirDinero(event)">
-            <select id="origen" required>
-                <option value="billetera">Billetera</option>
-                <option value="tarjeta">Tarjeta</option>
-            </select>
-            <select id="destino" required>
-                <option value="tarjeta">Tarjeta</option>
-                <option value="billetera">Billetera</option>
-            </select>
-            <input type="number" id="montoTransferencia" placeholder="S/ 0.00" required>
-            <button>Confirmar</button>
-        </form>
-    </div>
-
-    <!-- CONFIGURACIÓN -->
-    <div id="configuracion" class="seccion" style="display:none;">
-        <h2>Configuración</h2>
-        <p><button onclick="cambiarTema()">Cambiar Tema</button></p>
-        <p>
-            <label>
-                <input type="checkbox" id="notificaciones">
-                Activar notificaciones
-            </label>
-        </p>
-        <p>
-            <select>
-                <option>Español</option>
-                <option>Inglés</option>
-            </select>
-        </p>
-        <button>Eliminar cuenta</button>
-    </div>
-
 </div>
 
 <script>
+
     function mostrarSeccion(id, event) {
-      document.querySelectorAll('.seccion').forEach(div => div.style.display = 'none');
-      document.getElementById(id).style.display = 'block';
+      document.querySelectorAll('.seccion').forEach(div => div.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.querySelectorAll('.sidebar .nav-link').forEach(link => link.classList.remove('active'));
+      event.target.classList.add('active');
     }
+
 </script>
 
 </body>

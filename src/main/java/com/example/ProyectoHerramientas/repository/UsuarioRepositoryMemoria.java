@@ -11,9 +11,8 @@ public class UsuarioRepositoryMemoria {
     private Map<String, Usuario> usuarios = new HashMap<>();
 
     public UsuarioRepositoryMemoria() {
-        // usuarios de ejemplo
-        usuarios.put("admin", new Usuario("admin", "1234"));
-        usuarios.put("user", new Usuario("user", "abcd"));
+        // usuario de ejemplo
+        usuarios.put("juan", new Usuario("juan", "1234"));
     }
 
     public Usuario findByUsername(String username) {

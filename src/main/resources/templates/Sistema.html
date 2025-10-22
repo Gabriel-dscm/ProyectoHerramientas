@@ -171,6 +171,15 @@
 </div>
 
 <script>
+    let saldoBilletera = 0;
+    let saldoTarjeta = 0;
+    let movimientos = [];
+
+    const ctx = document.getElementById('gastosChart').getContext('2d');
+    const gastosChart = new Chart(ctx, {
+      type: 'pie',
+      data: { labels: [], datasets: [{ data: [], backgroundColor: [] }] }
+    });
 
     function mostrarSeccion(id, event) {
       document.querySelectorAll('.seccion').forEach(div => div.classList.remove('active'));
@@ -179,6 +188,120 @@
       event.target.classList.add('active');
     }
 
+    function actualizarSaldos() {
+      document.getElementById("saldoBilletera").textContent = "S/ " + saldoBilletera.toFixed(2);
+      document.getElementById("saldoTarjeta").textContent = "S/ " + saldoTarjeta.toFixed(2);
+    }
+
+    function vincularTarjeta(e) {
+      e.preventDefault();
+      const numero = document.getElementById("numeroTarjeta").value;
+      const saldoInicial = parseFloat(document.getElementById("saldoInicialTarjeta").value);
+      saldoTarjeta = saldoInicial;
+      actualizarSaldos();
+      document.getElementById("tarjetaVinculada").textContent = `Tarjeta vinculada: **** **** **** ${numero.slice(-4)}`;
+      e.target.reset();
+    }
+
+    function transferirDinero(e) {
+      e.preventDefault();
+      const origen = document.getElementById("origen").value;
+      const destino = document.getElementById("destino").value;
+      const monto = parseFloat(document.getElementById("montoTransferencia").value);
+
+      if (origen === destino) {
+        alert("El origen y destino no pueden ser iguales.");
+        return;
+      }
+      if (origen === "billetera" && monto > saldoBilletera) {
+        alert("Saldo insuficiente en billetera.");
+        return;
+      }
+      if (origen === "tarjeta" && monto > saldoTarjeta) {
+        alert("Saldo insuficiente en tarjeta.");
+        return;
+      }
+
+      if (origen === "billetera") {
+        saldoBilletera -= monto;
+        saldoTarjeta += monto;
+        agregarMovimientoAutomatico("Transferencia a tarjeta", -monto);
+      } else {
+        saldoTarjeta -= monto;
+        saldoBilletera += monto;
+        agregarMovimientoAutomatico("Transferencia a billetera", -monto);
+      }
+      actualizarSaldos();
+      e.target.reset();
+      alert("Transferencia realizada con éxito.");
+    }
+
+    function agregarMovimiento(e) {
+      e.preventDefault();
+      const desc = document.getElementById("descMovimiento").value;
+      const monto = parseFloat(document.getElementById("montoMovimiento").value);
+      const fecha = new Date().toLocaleDateString();
+
+      movimientos.push({ fecha, desc, monto });
+
+      const li = document.createElement("li");
+      li.className = "list-group-item d-flex justify-content-between align-items-center";
+      li.innerHTML = `${desc}: S/ ${monto.toFixed(2)}
+        <button class="btn btn-danger btn-sm" onclick="this.parentElement.remove()">Eliminar</button>`;
+      document.getElementById("listaMovimientos").appendChild(li);
+
+      const fila = `<tr>
+        <td>${fecha}</td>
+        <td>${desc}</td>
+        <td class="${monto < 0 ? 'text-danger' : 'text-success'}">
+          ${monto < 0 ? '-' : '+'} S/ ${Math.abs(monto).toFixed(2)}
+        </td>
+      </tr>`;
+      document.getElementById("tablaUltimosMov").insertAdjacentHTML("afterbegin", fila);
+
+      actualizarGrafico();
+
+      document.getElementById("descMovimiento").value = "";
+      document.getElementById("montoMovimiento").value = "";
+    }
+
+    function agregarMovimientoAutomatico(desc, monto) {
+      const fecha = new Date().toLocaleDateString();
+      movimientos.push({ fecha, desc, monto });
+
+      const fila = `<tr>
+        <td>${fecha}</td>
+        <td>${desc}</td>
+        <td class="${monto < 0 ? 'text-danger' : 'text-success'}">
+          ${monto < 0 ? '-' : '+'} S/ ${Math.abs(monto).toFixed(2)}
+        </td>
+      </tr>`;
+      document.getElementById("tablaUltimosMov").insertAdjacentHTML("afterbegin", fila);
+
+      actualizarGrafico();
+    }
+
+    function actualizarGrafico() {
+      const categorias = {};
+      movimientos.forEach(mov => {
+        if (!categorias[mov.desc]) categorias[mov.desc] = 0;
+        categorias[mov.desc] += Math.abs(mov.monto);
+      });
+
+      gastosChart.data.labels = Object.keys(categorias);
+      gastosChart.data.datasets[0].data = Object.values(categorias);
+      gastosChart.data.datasets[0].backgroundColor = Object.keys(categorias).map(() =>
+        `hsl(${Math.random() * 360}, 70%, 60%)`
+      );
+      gastosChart.update();
+    }
+
+    function cambiarTema() {
+      document.body.classList.toggle("bg-dark");
+      document.body.classList.toggle("text-white");
+    }
+
+    actualizarSaldos();
 </script>
 
 </body>

@@ -76,3 +76,5 @@ Barra lateral fija para navegación rápida.
 Tarjetas y tablas para mostrar información de manera clara.
 
 Gráficos interactivos para análisis de gastos.
+
+Prueba de webhook con Discord 🚀
